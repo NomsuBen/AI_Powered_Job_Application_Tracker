@@ -11,3 +11,5 @@ const userSchema = new mongoos.Schema({
         required: true
     }
 });
+
+module.exports = mongoos.model('user', userSchema);
