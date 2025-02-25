@@ -7,7 +7,7 @@ const JobApplication = require('../models/JobApplication');
 // desc get all job applications for the logged in user
 router.get('/', auth, async (req, res) => {
     try {
-        const applications = await JobApplication.find({ user: req.user.id });
+        const applications = await JobApplication.find({ userId: req.user.id });
         res.json(applications);
     } catch (error) {
         console.error(error.message);
@@ -21,7 +21,7 @@ router.post('/', auth, async (req, res) => {
     const { companyName, jobTitle, jobLocation, applicationDate, applicationStatus, notes } = req.body;
     try {
         const newApplication = new JobApplication({
-            user: req.user.id,
+            userId: req.user.id,
             companyName,
             jobTitle,
             jobLocation,
