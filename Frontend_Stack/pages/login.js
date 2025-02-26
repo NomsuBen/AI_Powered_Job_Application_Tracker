@@ -10,29 +10,19 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/login`,
-        { email, password }
-      );
-
+      const res = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      });
       localStorage.setItem("token", res.data.token);
       router.push("/dashboard");
     } catch (err) {
-      if (err.response) {
-        // Check if err.response exists
-        console.error("Server Error:", err.response.data);
-        alert(
-          "Login failed: " +
-            (err.response.data.message || "Invalid credentials")
-        ); // use a message from the server if it exists.
-      } else if (err.request) {
-        // The request was made but no response was received
-        console.error("Network Error:", err.request);
-        alert("Login failed: Network error. Please check your connection.");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error("Error:", err.message);
-        alert("Login failed: An unexpected error occurred.");
+      const errorMessage = err.response?.data?.msg || "Login failed";
+      alert(errorMessage);
+
+      // Redirect to register page if login fails
+      if (err.response?.data?.redirectTo) {
+        router.push(err.response.data.redirectTo);
       }
     }
   };
