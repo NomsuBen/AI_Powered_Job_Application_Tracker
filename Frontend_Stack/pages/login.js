@@ -14,12 +14,25 @@ export default function Login() {
         email,
         password,
       });
-      // Save token in local storage
       localStorage.setItem("token", res.data.token);
       router.push("/dashboard");
     } catch (err) {
-      console.error(err.response.data);
-      alert("Login failed");
+      if (err.response) {
+        // Check if err.response exists
+        console.error("Server Error:", err.response.data);
+        alert(
+          "Login failed: " +
+            (err.response.data.message || "Invalid credentials")
+        ); // use a message from the server if it exists.
+      } else if (err.request) {
+        // The request was made but no response was received
+        console.error("Network Error:", err.request);
+        alert("Login failed: Network error. Please check your connection.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error:", err.message);
+        alert("Login failed: An unexpected error occurred.");
+      }
     }
   };
 
