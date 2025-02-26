@@ -8,17 +8,21 @@ export default function Register() {
   const router = useRouter();
 
   const handleRegister = async (e) => {
-    e, preventDefault();
+    e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3001/api/register", {
+      const res = await axios.post("http://localhost:5000/api/register", {
         email,
         password,
       });
+
+      // Save token in local storage
       localStorage.setItem("token", res.data.token);
+
+      // Redirect to dashboard
       router.push("/dashboard");
-    } catch (error) {
-      console.error(error.response.data);
-      alert("Registration failed");
+    } catch (err) {
+      const errorMessage = err.response?.data?.msg || "Registration failed";
+      alert(errorMessage);
     }
   };
 

@@ -4,32 +4,31 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// @route   POST /api/login
-// @desc    Authenticate user & return token
-router.post("/login", async (req, res) => {
+// @route   POST /api/register
+// @desc    Register user
+router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if email & password exist
+    // Check if email and password exist
     if (!email || !password) {
       return res.status(400).json({ msg: "Please enter all fields" });
     }
 
-    // Check if user exists
+    // Check if user already exists
     let user = await User.findOne({ email });
-    if (!user) {
-      return res
-        .status(401)
-        .json({ msg: "Invalid credentials", redirectTo: "/register" });
+    if (user) {
+      return res.status(400).json({ msg: "User already exists" });
     }
 
-    // Validate password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(401)
-        .json({ msg: "Invalid credentials", redirectTo: "/register" });
-    }
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    user = new User({ email, password: hashedPassword });
+
+    await user.save();
 
     // Generate JWT Token
     const payload = { user: { id: user.id } };
@@ -43,7 +42,7 @@ router.post("/login", async (req, res) => {
       }
     );
   } catch (err) {
-    console.error("Error in login:", err.message);
+    console.error("Error in registration:", err.message);
     res.status(500).json({ msg: "Server error" });
   }
 });
