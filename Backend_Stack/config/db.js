@@ -1,16 +1,22 @@
-const mongoose = require('mongoose');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/auth");
+const applicationRoutes = require("./routes/applications");
+const resumeFeedbackRoutes = require("./routes/resumeFeedback");
+const { authenticate } = require("../middleware/auth");
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('MongoDb connected successfully');
-    } catch (error) {
-        console.log(error);
-        process.exit(1);
-    }
-};
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-module.exports = connectDB;
+connectDB();
+
+app.get("/", (req, res) => res.send("API Running"));
+app.use("/api/auth", authRoutes);
+app.use("/api/applications", authenticate, applicationRoutes);
+app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
