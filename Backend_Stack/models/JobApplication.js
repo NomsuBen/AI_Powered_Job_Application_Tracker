@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const JobApplicationSchema = new mongoose.Schema(
   {
-    user_id: {
+    userId: {
+      // Changed to userId
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

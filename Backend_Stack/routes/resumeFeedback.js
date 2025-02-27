@@ -1,17 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { authenticate } = require("../middleware/auth"); // Ensure correct middleware import
 
-// route post /api/resumeFeedback
-// desc Return mock AI resume feedback for the user's resume
-router.post('/', auth, async (req, res) => {
+// POST /api/resumeFeedback
+// Returns mock AI resume feedback for the user's resume
+router.post("/", authenticate, async (req, res) => {
+  try {
     const suggestions = [
-        'Consider tailoring your resume to the job description.','Highlight your most relevant experience.','Use bullet points to make your resume easier to read.','Ensure consistent formatting throughout your resume.','Proofread your resume for spelling and grammar errors.'
+      "Consider tailoring your resume to the job description.",
+      "Highlight your most relevant experience.",
+      "Use bullet points to make your resume easier to read.",
+      "Ensure consistent formatting throughout your resume.",
+      "Proofread your resume for spelling and grammar errors.",
     ];
-    // Return a random suggestion
-    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-    res.json({ suggestion: suggestions[randomSuggestion] });
-}
-);
+
+    // Select a random suggestion
+    const randomSuggestion =
+      suggestions[Math.floor(Math.random() * suggestions.length)];
+
+    res.json({ suggestion: randomSuggestion }); // ✅ Corrected: Directly return the selected suggestion
+  } catch (error) {
+    console.error("Error generating resume feedback:", error.message);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
 
 module.exports = router;
