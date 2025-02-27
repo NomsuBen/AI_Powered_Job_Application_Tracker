@@ -1,59 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Dashboard() {
+  const [applications, setApplications] = useState([]);
   const router = useRouter();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      fetchApplications(token);
+    }
+  }, []);
+
+  const fetchApplications = async (token) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
+      const res = await axios.get("http://localhost:5000/api/applications", {
+        headers: { "x-auth-token": token },
       });
-      // Save token in local storage
-      localStorage.setItem("token", res.data.token);
-      router.push("/dashboard");
+      setApplications(res.data);
     } catch (err) {
-      console.error(err.response.data);
+      console.error("Error fetching applications:", err.response?.data);
       alert("Login failed");
+      router.push("/login");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md">
-        <div className="mb-4">
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            className="border p-2 w-full"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1">Password</label>
-          <input
-            type="password"
-            className="border p-2 w-full"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Login
-        </button>
-      </form>
+    <div className="min-h-screen bg-gray-100 p-4">
+      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+      <ul>
+        {applications.map((app) => (
+          <li key={app._id} className="border-b py-2">
+            {app.title} at {app.company}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

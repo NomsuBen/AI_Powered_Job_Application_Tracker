@@ -14,16 +14,15 @@ export default function Login() {
         email,
         password,
       });
+
+      // Save token in local storage
       localStorage.setItem("token", res.data.token);
+
+      // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
       const errorMessage = err.response?.data?.msg || "Login failed";
       alert(errorMessage);
-
-      // Redirect to register page if login fails
-      if (err.response?.data?.redirectTo) {
-        router.push(err.response.data.redirectTo);
-      }
     }
   };
 
