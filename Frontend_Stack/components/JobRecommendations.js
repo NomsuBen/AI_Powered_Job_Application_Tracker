@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 export default function JobRecommendations() {
   const [jobs, setJobs] = useState([]);
 
-  // For demonstration, using static mock data
   useEffect(() => {
     setJobs([
       {
