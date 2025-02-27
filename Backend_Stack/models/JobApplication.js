@@ -3,19 +3,18 @@ const mongoose = require("mongoose");
 const JobApplicationSchema = new mongoose.Schema(
   {
     userId: {
-      // Changed to userId
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    title: { type: String, required: true },
-    company: { type: String, required: true },
-    status: {
+    jobTitle: { type: String, required: true }, // ✅ Match frontend field name
+    companyName: { type: String, required: true }, // ✅ Match frontend field name
+    applicationStatus: {
       type: String,
       enum: ["Applied", "Interview Scheduled", "Offer Received", "Rejected"],
       required: true,
     },
-    applied_date: { type: Date, required: true },
+    applicationDate: { type: Date, required: true }, // ✅ Match frontend field name
     notes: { type: String },
   },
   { timestamps: true }

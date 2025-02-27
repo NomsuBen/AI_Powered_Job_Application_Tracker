@@ -17,18 +17,28 @@ export default function Login() {
 
       console.log("Login Successful:", res.data);
 
-      localStorage.setItem("token", res.data.token); // ✅ Store token
+      if (!res.data.token) {
+        throw new Error("No token received from server");
+      }
 
-      // ✅ Delay redirect to ensure token is stored
+      localStorage.setItem("token", res.data.token); // ✅ Store token
+      console.log(
+        "Token saved in localStorage:",
+        localStorage.getItem("token")
+      ); // ✅ Debugging token storage
+
+      // ✅ Redirect to dashboard after a short delay
       setTimeout(() => {
+        console.log("Redirecting to dashboard...");
         router.push("/dashboard");
-      }, 100);
+      }, 500);
     } catch (err) {
       console.error("Login Error:", err.response?.data || err.message);
       alert(err.response?.data?.msg || "Login failed");
 
       // ✅ Redirect to register page if "Invalid credentials"
       if (err.response?.data?.msg === "Invalid credentials") {
+        console.log("Redirecting to register...");
         router.push("/register");
       }
     }

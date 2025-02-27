@@ -8,7 +8,6 @@ exports.authenticate = (req, res, next) => {
   }
 
   const tokenParts = authHeader.split(" ");
-
   if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
     return res.status(401).json({ error: "Invalid token format" });
   }
@@ -17,7 +16,7 @@ exports.authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user; // ✅ Ensure req.user contains only { id: "some-user-id" }
+    req.user = decoded.user; // ✅ Attach user ID to request
     next();
   } catch (error) {
     res.status(400).json({ error: "Invalid token" });
