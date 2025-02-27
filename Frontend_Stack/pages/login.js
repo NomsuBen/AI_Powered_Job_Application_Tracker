@@ -11,22 +11,26 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", {
-        // ✅ Corrected API URL
         email,
         password,
       });
 
-      console.log("Login Successful:", res.data); // ✅ Debugging
+      console.log("Login Successful:", res.data);
 
-      // Save token in local storage
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token); // ✅ Store token
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // ✅ Delay redirect to ensure token is stored
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (err) {
-      console.error("Login Error:", err.response?.data || err.message); // ✅ Debugging
-      const errorMessage = err.response?.data?.msg || "Login failed";
-      alert(errorMessage);
+      console.error("Login Error:", err.response?.data || err.message);
+      alert(err.response?.data?.msg || "Login failed");
+
+      // ✅ Redirect to register page if "Invalid credentials"
+      if (err.response?.data?.msg === "Invalid credentials") {
+        router.push("/register");
+      }
     }
   };
 

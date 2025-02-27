@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User"); // ✅ Ensure this file exists
 
-// POST /api/login
+// ✅ LOGIN ROUTE
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
     );
   } catch (error) {
     console.error("Login Server Error:", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ error: "Server Error" });
   }
 });
 

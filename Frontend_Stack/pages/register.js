@@ -10,10 +10,13 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/register", {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
+        // ✅ Fixed API URL
         email,
         password,
       });
+
+      console.log("Registration Successful:", res.data);
 
       // Save token in local storage
       localStorage.setItem("token", res.data.token);
@@ -21,6 +24,7 @@ export default function Register() {
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
+      console.error("Registration Error:", err.response?.data || err.message);
       const errorMessage = err.response?.data?.msg || "Registration failed";
       alert(errorMessage);
     }

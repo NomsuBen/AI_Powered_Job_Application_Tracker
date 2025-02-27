@@ -10,6 +10,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token");
 
     if (!token) {
+      console.log("No token found, redirecting to login");
       router.push("/login");
     } else {
       fetchApplications(token);
@@ -19,12 +20,13 @@ export default function Dashboard() {
   const fetchApplications = async (token) => {
     try {
       const res = await axios.get("http://localhost:5000/api/applications", {
-        headers: { "x-auth-token": token },
+        headers: { Authorization: `Bearer ${token}` }, // ✅ Fixed Header
       });
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching applications:", err.response?.data);
-      alert("Login failed");
+      alert("Session expired. Please login again.");
+      localStorage.removeItem("token"); // ✅ Remove invalid token
       router.push("/login");
     }
   };
