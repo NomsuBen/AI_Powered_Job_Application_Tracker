@@ -10,10 +10,13 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        // ✅ Corrected API URL
         email,
         password,
       });
+
+      console.log("Login Successful:", res.data); // ✅ Debugging
 
       // Save token in local storage
       localStorage.setItem("token", res.data.token);
@@ -21,6 +24,7 @@ export default function Login() {
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
+      console.error("Login Error:", err.response?.data || err.message); // ✅ Debugging
       const errorMessage = err.response?.data?.msg || "Login failed";
       alert(errorMessage);
     }
