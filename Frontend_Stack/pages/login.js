@@ -7,10 +7,15 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  // ✅ Use environment variable for API URL, fallback to Heroku backend
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });

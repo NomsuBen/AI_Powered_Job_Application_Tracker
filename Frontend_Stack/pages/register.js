@@ -7,26 +7,35 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  // ✅ Use environment variable for API URL, fallback to Heroku backend
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
-        // ✅ Fixed API URL
+      const res = await axios.post(`${API_URL}/auth/register`, {
         email,
         password,
       });
 
       console.log("Registration Successful:", res.data);
 
-      // Save token in local storage
+      // ✅ Save token & Redirect to Dashboard
       localStorage.setItem("token", res.data.token);
-
-      // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
       console.error("Registration Error:", err.response?.data || err.message);
       const errorMessage = err.response?.data?.msg || "Registration failed";
+
       alert(errorMessage);
+
+      // ✅ Redirect to login if user already exists
+      if (err.response?.data?.msg === "User already exists") {
+        console.log("Redirecting to login...");
+        router.push("/login");
+      }
     }
   };
 

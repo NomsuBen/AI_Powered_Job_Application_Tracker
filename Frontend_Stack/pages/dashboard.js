@@ -14,6 +14,11 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // ✅ Use environment variable for API URL, fallback to Heroku backend URL
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
+
   // ✅ Check for token and fetch applications
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,7 +41,7 @@ export default function Dashboard() {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/applications?search=${searchTerm}&status=${statusFilter}`,
+        `${API_URL}/applications?search=${searchTerm}&status=${statusFilter}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -59,7 +64,7 @@ export default function Dashboard() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`http://localhost:5000/api/applications/${id}`, {
+      await axios.delete(`${API_URL}/applications/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchApplications(token);
