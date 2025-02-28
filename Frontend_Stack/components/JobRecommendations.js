@@ -4,6 +4,11 @@ export default function JobRecommendations() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
+    fetchJobRecommendations();
+  }, []);
+
+  const fetchJobRecommendations = () => {
+    // ✅ Simulated job recommendations (Replace with real API call if needed)
     setJobs([
       {
         id: 1,
@@ -24,21 +29,25 @@ export default function JobRecommendations() {
         description: "Contribute to both frontend and backend.",
       },
     ]);
-  }, []);
+  };
 
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white p-4 rounded shadow mb-4">
       <h2 className="text-xl font-bold mb-2">Job Recommendations</h2>
-      <ul>
-        {jobs.map((job) => (
-          <li key={job.id} className="border-b py-2">
-            <p className="font-bold">
-              {job.title} at {job.company}
-            </p>
-            <p>{job.description}</p>
-          </li>
-        ))}
-      </ul>
+      {jobs.length === 0 ? (
+        <p>No job recommendations available.</p>
+      ) : (
+        <ul>
+          {jobs.map((job) => (
+            <li key={job.id} className="border-b py-2">
+              <p className="font-bold">
+                {job.title} at {job.company}
+              </p>
+              <p>{job.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

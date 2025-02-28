@@ -1,20 +1,21 @@
 import axios from "axios";
 
-export default function JobApplicationList({
-  applications,
-  fetchApplications,
-}) {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+export default function JobApplicationList({ applications, onDelete }) {
   const handleDelete = async (id) => {
+    const token = localStorage.getItem("token"); // ✅ Get token dynamically
+
+    if (!token) {
+      alert("Unauthorized: Please log in again.");
+      return;
+    }
+
     try {
       await axios.delete(`http://localhost:5000/api/applications/${id}`, {
-        headers: { "x-auth-token": token },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      fetchApplications();
+      onDelete(id); // ✅ Call delete function passed from `dashboard.js`
     } catch (err) {
-      console.error(err.response.data);
+      console.error("Failed to delete application:", err.response?.data || err);
       alert("Failed to delete application");
     }
   };
@@ -33,9 +34,11 @@ export default function JobApplicationList({
             >
               <div>
                 <p className="font-bold">
-                  {app.title} at {app.company}
+                  {app.jobTitle} at {app.companyName}{" "}
+                  {/* ✅ Fixed field names */}
                 </p>
-                <p>Status: {app.status}</p>
+                <p>Status: {app.applicationStatus}</p>{" "}
+                {/* ✅ Fixed field name */}
                 <p>Notes: {app.notes}</p>
               </div>
               <button

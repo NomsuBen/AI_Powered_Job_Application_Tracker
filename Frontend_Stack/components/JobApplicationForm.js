@@ -1,37 +1,38 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function JobApplicationForm({ fetchApplications }) {
-  const [title, setTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [status, setStatus] = useState("Applied");
+export default function JobApplicationForm({ onApplicationAdded }) {
+  const [jobTitle, setJobTitle] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState("Applied");
   const [notes, setNotes] = useState("");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Unauthorized: Please log in again.");
+      return;
+    }
+
     try {
       await axios.post(
         "http://localhost:5000/api/applications",
+        { jobTitle, companyName, applicationStatus, notes },
         {
-          title,
-          company,
-          status,
-          notes,
-        },
-        {
-          headers: { "x-auth-token": token },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTitle("");
-      setCompany("");
-      setStatus("Applied");
+
+      setJobTitle("");
+      setCompanyName("");
+      setApplicationStatus("Applied");
       setNotes("");
-      fetchApplications();
+      onApplicationAdded(); // ✅ Update dashboard state
     } catch (err) {
-      console.error(err.response.data);
-      alert("Failed to add application");
+      console.error("Failed to add application:", err.response?.data || err);
+      alert("Failed to add application.");
     }
   };
 
@@ -43,8 +44,8 @@ export default function JobApplicationForm({ fetchApplications }) {
         <input
           type="text"
           className="border p-1 w-full"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={jobTitle}
+          onChange={(e) => setJobTitle(e.target.value)}
           required
         />
       </div>
@@ -53,8 +54,8 @@ export default function JobApplicationForm({ fetchApplications }) {
         <input
           type="text"
           className="border p-1 w-full"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
           required
         />
       </div>
@@ -62,8 +63,8 @@ export default function JobApplicationForm({ fetchApplications }) {
         <label className="block">Status</label>
         <select
           className="border p-1 w-full"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          value={applicationStatus}
+          onChange={(e) => setApplicationStatus(e.target.value)}
         >
           <option value="Applied">Applied</option>
           <option value="Interview Scheduled">Interview Scheduled</option>
