@@ -1,45 +1,56 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function JobRecommendations() {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // ✅ Use environment variable for API URL, fallback to Heroku backend URL
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
 
   useEffect(() => {
     fetchJobRecommendations();
   }, []);
 
-  const fetchJobRecommendations = () => {
-    // ✅ Simulated job recommendations (Replace with real API call if needed)
-    setJobs([
-      {
-        id: 1,
-        title: "Frontend Developer",
-        company: "Tech Co.",
-        description: "Work on cutting edge web applications.",
-      },
-      {
-        id: 2,
-        title: "Backend Developer",
-        company: "Dev Solutions",
-        description: "Build scalable server-side systems.",
-      },
-      {
-        id: 3,
-        title: "Full Stack Developer",
-        company: "Innovate Inc.",
-        description: "Contribute to both frontend and backend.",
-      },
-    ]);
+  const fetchJobRecommendations = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.get(`${API_URL}/jobs/recommendations`);
+      setJobs(response.data); // ✅ Update jobs state with real API data
+    } catch (error) {
+      console.error(
+        "Failed to fetch job recommendations:",
+        error.response?.data || error
+      );
+      setError("Failed to fetch job recommendations. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
       <h2 className="text-xl font-bold mb-2">Job Recommendations</h2>
-      {jobs.length === 0 ? (
+
+      {loading && (
+        <p className="text-blue-500">Loading job recommendations...</p>
+      )}
+
+      {error && <p className="text-red-500">{error}</p>}
+
+      {!loading && !error && jobs.length === 0 && (
         <p>No job recommendations available.</p>
-      ) : (
+      )}
+
+      {!loading && !error && jobs.length > 0 && (
         <ul>
           {jobs.map((job) => (
-            <li key={job.id} className="border-b py-2">
+            <li key={job._id} className="border-b py-2">
               <p className="font-bold">
                 {job.title} at {job.company}
               </p>

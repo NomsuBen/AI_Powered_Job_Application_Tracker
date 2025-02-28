@@ -4,6 +4,12 @@ import axios from "axios";
 export default function ResumeFeedback() {
   const [resumeText, setResumeText] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Use an environment variable for API URL or fallback to Heroku backend
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,9 +20,12 @@ export default function ResumeFeedback() {
       return;
     }
 
+    setLoading(true); // ✅ Show loading while fetching feedback
+    setFeedback("");
+
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/resume-feedback",
+        `${API_URL}/resume-feedback`,
         { resume: resumeText },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -30,6 +39,8 @@ export default function ResumeFeedback() {
         err.response?.data || err
       );
       alert("Failed to get resume feedback.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,12 +54,14 @@ export default function ResumeFeedback() {
           placeholder="Paste your resume text here..."
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
+          required
         ></textarea>
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+          disabled={loading}
         >
-          Get Feedback
+          {loading ? "Processing..." : "Get Feedback"}
         </button>
       </form>
       {feedback && <p className="mt-2 text-green-600">{feedback}</p>}

@@ -1,6 +1,11 @@
 import axios from "axios";
 
 export default function JobApplicationList({ applications, onDelete }) {
+  // ✅ Use environment variable for API URL, fallback to Heroku backend URL
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
+
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token"); // ✅ Get token dynamically
 
@@ -10,7 +15,7 @@ export default function JobApplicationList({ applications, onDelete }) {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/applications/${id}`, {
+      await axios.delete(`${API_URL}/applications/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       onDelete(id); // ✅ Call delete function passed from `dashboard.js`
@@ -34,11 +39,9 @@ export default function JobApplicationList({ applications, onDelete }) {
             >
               <div>
                 <p className="font-bold">
-                  {app.jobTitle} at {app.companyName}{" "}
-                  {/* ✅ Fixed field names */}
+                  {app.jobTitle} at {app.companyName}
                 </p>
-                <p>Status: {app.applicationStatus}</p>{" "}
-                {/* ✅ Fixed field name */}
+                <p>Status: {app.applicationStatus}</p>
                 <p>Notes: {app.notes}</p>
               </div>
               <button
