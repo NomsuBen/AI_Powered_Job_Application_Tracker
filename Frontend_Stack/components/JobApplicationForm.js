@@ -7,6 +7,11 @@ export default function JobApplicationForm({ onApplicationAdded }) {
   const [applicationStatus, setApplicationStatus] = useState("Applied");
   const [notes, setNotes] = useState("");
 
+  // ✅ Use environment variable for API URL, fallback to Heroku backend URL
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -18,7 +23,7 @@ export default function JobApplicationForm({ onApplicationAdded }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/applications",
+        `${API_URL}/applications`, // ✅ Use dynamic API URL
         { jobTitle, companyName, applicationStatus, notes },
         {
           headers: { Authorization: `Bearer ${token}` },
