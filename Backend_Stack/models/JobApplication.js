@@ -7,14 +7,15 @@ const JobApplicationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    jobTitle: { type: String, required: true }, // ✅ Match frontend field name
-    companyName: { type: String, required: true }, // ✅ Match frontend field name
+    jobTitle: { type: String, required: true },
+    companyName: { type: String, required: true },
+    jobLocation: { type: String },
     applicationStatus: {
       type: String,
       enum: ["Applied", "Interview Scheduled", "Offer Received", "Rejected"],
       required: true,
     },
-    applicationDate: { type: Date, required: true }, // ✅ Match frontend field name
+    applicationDate: { type: Date, default: Date.now }, // ✅ Default value added
     notes: { type: String },
   },
   { timestamps: true }

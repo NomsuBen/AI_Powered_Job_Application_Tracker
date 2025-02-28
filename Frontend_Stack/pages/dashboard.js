@@ -18,6 +18,7 @@ export default function Dashboard() {
 
   const router = useRouter();
 
+  // ✅ Check for token and fetch applications
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Checking token in Dashboard:", token); // ✅ Debugging
@@ -30,9 +31,10 @@ export default function Dashboard() {
     }
   }, [searchTerm, statusFilter]);
 
+  // ✅ Fetch Job Applications
   const fetchApplications = async (token) => {
     setLoading(true);
-    setError(""); // ✅ Clear old errors
+    setError(""); // ✅ Clear previous errors
 
     console.log("Fetching applications with token:", token); // ✅ Debugging
 
@@ -44,16 +46,20 @@ export default function Dashboard() {
         }
       );
 
-      console.log("Applications fetched:", res.data); // ✅ Debugging
+      console.log("Applications fetched successfully:", res.data); // ✅ Debugging
       setApplications(res.data);
     } catch (err) {
       console.error("API Request Failed:", err.response?.data || err.message);
-      setError("Failed to fetch applications. Please check authentication.");
+      setError(
+        err.response?.data?.error ||
+          "Failed to fetch applications. Please check authentication."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Handle Add New Application
   const handleAddApplication = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -97,6 +103,7 @@ export default function Dashboard() {
     }
   };
 
+  // ✅ Handle Delete Application
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     try {
@@ -109,9 +116,25 @@ export default function Dashboard() {
     }
   };
 
+  // ✅ Handle Logout Function
+  const handleLogout = () => {
+    console.log("Logging out..."); // ✅ Debugging
+    localStorage.removeItem("token"); // ✅ Remove token from storage
+    router.push("/login"); // ✅ Redirect to login page
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+      {/* ✅ Navbar with Logout Button */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Logout
+        </button>
+      </div>
 
       {/* ✅ Search & Filter */}
       <div className="flex gap-2 mb-4">

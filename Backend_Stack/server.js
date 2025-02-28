@@ -14,24 +14,17 @@ connectDB();
 
 // ✅ Middleware
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Change if using deployed frontend
-    credentials: true,
-  })
-);
+app.use(cors());
 
 // ✅ API Running Check
 app.get("/", (req, res) => res.send("API Running"));
 
-// ✅ Register authentication routes
+// ✅ Register API Routes
 app.use("/api/auth", authRoutes);
-
-// ✅ Protect application & resume routes
 app.use("/api/applications", authenticate, applicationRoutes);
 app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
 
-// ✅ Handle Undefined Routes
+// ✅ Catch "Route Not Found" Errors
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });

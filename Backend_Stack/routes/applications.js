@@ -15,18 +15,24 @@ router.post("/", authenticate, async (req, res) => {
       notes,
     } = req.body;
 
-    console.log("Received Job Application Data:", req.body); // ✅ Log request data
+    console.log("📥 Received Job Application Data:", req.body); // ✅ Debugging
 
     // ✅ Validate required fields
     if (!companyName || !jobTitle || !applicationStatus) {
+      console.error("❌ Missing required fields.");
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     // ✅ Ensure `req.user.id` exists
     if (!req.user || !req.user.id) {
+      console.error("❌ User not authenticated.");
       return res.status(401).json({ error: "User not authenticated" });
     }
 
+    // ✅ Log user ID
+    console.log("🔑 User ID:", req.user.id);
+
+    // ✅ Create job application
     const newApplication = new JobApplication({
       userId: req.user.id,
       companyName,
@@ -37,12 +43,13 @@ router.post("/", authenticate, async (req, res) => {
       notes,
     });
 
+    // ✅ Save to database
     const application = await newApplication.save();
-    console.log("New Job Application Saved:", application); // ✅ Log saved data
+    console.log("✅ New Job Application Saved:", application); // ✅ Debugging
 
     res.json(application);
   } catch (error) {
-    console.error("Error in POST /api/applications:", error.message); // ✅ Log the actual error
+    console.error("❌ Error in POST /api/applications:", error.message); // ✅ Log the actual error
     res.status(500).json({ error: "Server Error", details: error.message });
   }
 });
