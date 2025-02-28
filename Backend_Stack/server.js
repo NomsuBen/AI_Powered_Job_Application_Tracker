@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
-const applicationRoutes = require("./routes/applications");
+const applicationRoutes = require("./routes/applications"); // ✅ Ensure this is imported
 const resumeFeedbackRoutes = require("./routes/resumeFeedback");
 const { authenticate } = require("./middleware/auth");
 
@@ -21,7 +21,7 @@ app.get("/", (req, res) => res.send("API Running"));
 
 // ✅ Register API Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/applications", authenticate, applicationRoutes);
+app.use("/api/applications", authenticate, applicationRoutes); // ✅ Ensure it's here
 app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
 
 // ✅ Catch "Route Not Found" Errors

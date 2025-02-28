@@ -40,7 +40,7 @@ export default function Dashboard() {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/applications?search=${searchTerm}&status=${statusFilter}`,
+        "http://localhost:5000/api/applications", // ✅ Ensure this matches backend
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -50,6 +50,8 @@ export default function Dashboard() {
       setApplications(res.data);
     } catch (err) {
       console.error("API Request Failed:", err.response?.data || err.message);
+
+      // ✅ Show backend error message if available
       setError(
         err.response?.data?.error ||
           "Failed to fetch applications. Please check authentication."
