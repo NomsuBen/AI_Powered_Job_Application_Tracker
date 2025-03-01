@@ -1,3 +1,4 @@
+// frontend/pages/login.js
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -7,7 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ Use environment variable for API URL, fallback to Heroku backend
+  // ✅ FIX: API URL from environment variable
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
@@ -26,13 +27,14 @@ export default function Login() {
         throw new Error("No token received from server");
       }
 
-      localStorage.setItem("token", res.data.token); // ✅ Store token
+      // ✅ FIX: Store token properly in localStorage
+      localStorage.setItem("token", res.data.token);
+
       console.log(
         "Token saved in localStorage:",
         localStorage.getItem("token")
-      ); // ✅ Debugging token storage
+      );
 
-      // ✅ Redirect to dashboard after a short delay
       setTimeout(() => {
         console.log("Redirecting to dashboard...");
         router.push("/dashboard");
@@ -41,7 +43,6 @@ export default function Login() {
       console.error("Login Error:", err.response?.data || err.message);
       alert(err.response?.data?.msg || "Login failed");
 
-      // ✅ Redirect to register page if "Invalid credentials"
       if (err.response?.data?.msg === "Invalid credentials") {
         console.log("Redirecting to register...");
         router.push("/register");

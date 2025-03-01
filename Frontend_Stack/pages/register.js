@@ -3,11 +3,12 @@ import axios from "axios";
 import { useRouter } from "next/router";
 
 export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ Use environment variable for API URL, fallback to Heroku backend
+  // ✅ FIX: API URL from environment variable
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
@@ -16,13 +17,14 @@ export default function Register() {
     e.preventDefault();
     try {
       const res = await axios.post(`${API_URL}/auth/register`, {
+        name,
         email,
         password,
       });
 
       console.log("Registration Successful:", res.data);
 
-      // ✅ Save token & Redirect to Dashboard
+      // ✅ FIX: Save token & Redirect to Dashboard
       localStorage.setItem("token", res.data.token);
       router.push("/dashboard");
     } catch (err) {
@@ -46,6 +48,16 @@ export default function Register() {
         onSubmit={handleRegister}
         className="bg-white p-6 rounded shadow-md"
       >
+        <div className="mb-4">
+          <label className="block mb-1">Name</label>
+          <input
+            type="text"
+            className="border p-2 w-full"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
         <div className="mb-4">
           <label className="block mb-1">Email</label>
           <input

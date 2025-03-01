@@ -6,10 +6,8 @@ const applicationRoutes = require("./routes/applications");
 const resumeFeedbackRoutes = require("./routes/resumeFeedback");
 const { authenticate } = require("./middleware/auth");
 
-// ✅ Load env variables only in development
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+// ✅ Load environment variables
+require("dotenv").config();
 
 // ✅ Connect to MongoDB
 connectDB();
@@ -18,30 +16,43 @@ const app = express();
 
 // ✅ Middleware
 app.use(express.json());
-app.use(cors());
 
-// ✅ API Running Check
-app.get("/", (req, res) =>
-  res.json({ status: "success", message: "API Running 🚀" })
+// ✅ FIX: Allow frontend domain in CORS
+app.use(
+  cors({
+    origin: ["https://nomsuben-job-tracker.vercel.app"], // Allow frontend domain
+    credentials: true, // Allow cookies if needed
+  })
 );
 
-// ✅ Register API Routes
-app.use("/api/auth", authRoutes);
+// ✅ API Health Check
+app.get("/", (req, res) => {
+  res.json({ status: "success", message: "API Running 🚀" });
+});
+
+// ✅ Register Routes (Ensure proper order)
+app.use("/api/auth", authRoutes); // Authentication (No authentication required)
+
+// ✅ Application & Resume Routes (If issues occur, remove `authenticate`)
 app.use("/api/applications", authenticate, applicationRoutes);
 app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
 
-// ✅ Catch 404 (Route Not Found)
+// ✅ Catch All 404 Errors
 app.use((req, res) => {
+  console.warn(`⚠️ Route not found: ${req.originalUrl}`);
   res.status(404).json({ status: "error", message: "Route not found" });
 });
 
-// ✅ Global Error Handler (Improved for Debugging)
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err.message);
+  console.error("❌ Server Error:", err.message);
   res.status(500).json({
     status: "error",
     message: "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    error:
+      process.env.NODE_ENV === "development"
+        ? err.stack
+        : "Something went wrong",
   });
 });
 

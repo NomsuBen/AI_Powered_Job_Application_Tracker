@@ -7,11 +7,11 @@ export default function Home() {
         AI-Powered Job Application Tracker
       </h1>
       <div>
-        <Link href="/login">
-          <a className="text-blue-500 mx-2">Login</a>
+        <Link href="/login" className="text-blue-500 mx-2">
+          Login {/* Removed <a> tag */}
         </Link>
-        <Link href="/register">
-          <a className="text-blue-500 mx-2">Register</a>
+        <Link href="/register" className="text-blue-500 mx-2">
+          Register {/* Removed <a> tag */}
         </Link>
       </div>
     </div>
