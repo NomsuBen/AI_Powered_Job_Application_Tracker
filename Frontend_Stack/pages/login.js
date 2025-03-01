@@ -1,4 +1,3 @@
-// frontend/pages/login.js
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -8,7 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ FIX: API URL from environment variable
+  // ✅ Use environment variable for API URL, fallback to Heroku
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
@@ -27,9 +26,8 @@ export default function Login() {
         throw new Error("No token received from server");
       }
 
-      // ✅ FIX: Store token properly in localStorage
+      // ✅ Store token properly in localStorage
       localStorage.setItem("token", res.data.token);
-
       console.log(
         "Token saved in localStorage:",
         localStorage.getItem("token")
@@ -37,14 +35,17 @@ export default function Login() {
 
       setTimeout(() => {
         console.log("Redirecting to dashboard...");
-        router.push("/dashboard");
+        router.push("/dashboard"); // ✅ Redirect to dashboard on successful login
       }, 500);
     } catch (err) {
       console.error("Login Error:", err.response?.data || err.message);
-      alert(err.response?.data?.msg || "Login failed");
+      const errorMessage = err.response?.data?.msg || "Login failed";
 
-      if (err.response?.data?.msg === "Invalid credentials") {
-        console.log("Redirecting to register...");
+      alert(errorMessage);
+
+      // ✅ If user not found, redirect to register page
+      if (err.response?.data?.msg === "User not found") {
+        console.log("User not found, redirecting to register...");
         router.push("/register");
       }
     }
