@@ -8,7 +8,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ FIX: API URL from environment variable
+  // ✅ Use environment variable for API URL, fallback to Heroku
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
@@ -24,18 +24,17 @@ export default function Register() {
 
       console.log("Registration Successful:", res.data);
 
-      // ✅ FIX: Save token & Redirect to Dashboard
-      localStorage.setItem("token", res.data.token);
-      router.push("/dashboard");
+      alert("Registration successful! Redirecting to login...");
+      router.push("/login"); // ✅ Redirect to login after successful registration
     } catch (err) {
       console.error("Registration Error:", err.response?.data || err.message);
       const errorMessage = err.response?.data?.msg || "Registration failed";
 
       alert(errorMessage);
 
-      // ✅ Redirect to login if user already exists
+      // ✅ If user already exists, redirect to login
       if (err.response?.data?.msg === "User already exists") {
-        console.log("Redirecting to login...");
+        console.log("User exists, redirecting to login...");
         router.push("/login");
       }
     }
