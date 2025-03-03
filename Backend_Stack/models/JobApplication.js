@@ -26,6 +26,11 @@ const JobApplicationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    dateApplied: {
+      type: Date,
+      required: true, // ✅ Ensures date is provided
+      default: Date.now, // ✅ Default to current date
+    },
   },
   { timestamps: true } // ✅ Adds `createdAt` & `updatedAt` automatically
 );

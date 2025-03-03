@@ -6,10 +6,11 @@ export default function JobApplicationForm({ onApplicationAdded }) {
   const [companyName, setCompanyName] = useState("");
   const [applicationStatus, setApplicationStatus] = useState("Applied");
   const [notes, setNotes] = useState("");
+  const [dateApplied, setDateApplied] = useState(""); // ✅ New state for date
 
   // ✅ Use environment variable for API URL, fallback to Heroku backend URL
   const API_URL =
-    process.env.REACT_APP_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
 
   const handleSubmit = async (e) => {
@@ -24,17 +25,21 @@ export default function JobApplicationForm({ onApplicationAdded }) {
     try {
       await axios.post(
         `${API_URL}/applications`, // ✅ Use dynamic API URL
-        { jobTitle, companyName, applicationStatus, notes },
+        { jobTitle, companyName, applicationStatus, notes, dateApplied },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
+      // ✅ Reset form fields
       setJobTitle("");
       setCompanyName("");
       setApplicationStatus("Applied");
       setNotes("");
-      onApplicationAdded(); // ✅ Update dashboard state
+      setDateApplied("");
+
+      // ✅ Update parent component (dashboard)
+      onApplicationAdded();
     } catch (err) {
       console.error("Failed to add application:", err.response?.data || err);
       alert("Failed to add application.");
@@ -84,6 +89,16 @@ export default function JobApplicationForm({ onApplicationAdded }) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         ></textarea>
+      </div>
+      <div className="mb-2">
+        <label className="block">Date Applied</label>
+        <input
+          type="date"
+          className="border p-1 w-full"
+          value={dateApplied}
+          onChange={(e) => setDateApplied(e.target.value)}
+          required
+        />
       </div>
       <button
         type="submit"

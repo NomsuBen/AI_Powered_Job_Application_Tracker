@@ -4,28 +4,36 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const applicationRoutes = require("./routes/applications");
 const resumeFeedbackRoutes = require("./routes/resumeFeedback");
-const jobsRoutes = require("./routes/jobs"); // ✅ Added Jobs API Route
+const jobsRoutes = require("./routes/jobs"); // ✅ Include jobs route
 const { authenticate } = require("./middleware/auth");
 
 // ✅ Load environment variables
 require("dotenv").config();
 
-// ✅ Connect to MongoDB
-connectDB();
-
+// ✅ Initialize Express App
 const app = express();
+
+// ✅ Connect to MongoDB before starting the server
+connectDB()
+  .then(() => {
+    console.log("✅ MongoDB Connected Successfully");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1); // Exit if DB connection fails
+  });
 
 // ✅ Middleware
 app.use(express.json());
 
-// ✅ FIX: Allow frontend domain(s) in CORS
+// ✅ Dynamic CORS (Allows flexibility in frontend domain settings)
+const FRONTEND_URL =
+  process.env.FRONTEND_URL || "https://nomsuben-job-tracker.vercel.app";
+
 app.use(
   cors({
-    origin: [
-      "https://nomsuben-job-tracker.vercel.app", // ✅ Frontend domain
-      "http://localhost:3000", // ✅ Local frontend (for development)
-    ],
-    credentials: true, // ✅ Allow credentials (cookies, auth headers)
+    origin: [FRONTEND_URL], // ✅ Allow frontend domain dynamically
+    credentials: true, // ✅ Allow cookies if needed
   })
 );
 
@@ -35,10 +43,8 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Register Routes (Ensure proper order)
-app.use("/api/auth", authRoutes); // Authentication (No authentication required)
-app.use("/api/jobs", jobsRoutes); // ✅ Added Jobs Route
-
-// ✅ Application & Resume Routes (Ensure auth where needed)
+app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobsRoutes); // ✅ Fix: Register jobs route BEFORE authentication
 app.use("/api/applications", authenticate, applicationRoutes);
 app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
 
