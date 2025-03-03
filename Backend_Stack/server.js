@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const applicationRoutes = require("./routes/applications");
 const resumeFeedbackRoutes = require("./routes/resumeFeedback");
+const jobsRoutes = require("./routes/jobs"); // ✅ Added Jobs API Route
 const { authenticate } = require("./middleware/auth");
 
 // ✅ Load environment variables
@@ -17,11 +18,14 @@ const app = express();
 // ✅ Middleware
 app.use(express.json());
 
-// ✅ FIX: Allow frontend domain in CORS
+// ✅ FIX: Allow frontend domain(s) in CORS
 app.use(
   cors({
-    origin: ["https://nomsuben-job-tracker.vercel.app"], // Allow frontend domain
-    credentials: true, // Allow cookies if needed
+    origin: [
+      "https://nomsuben-job-tracker.vercel.app", // ✅ Frontend domain
+      "http://localhost:3000", // ✅ Local frontend (for development)
+    ],
+    credentials: true, // ✅ Allow credentials (cookies, auth headers)
   })
 );
 
@@ -32,8 +36,9 @@ app.get("/", (req, res) => {
 
 // ✅ Register Routes (Ensure proper order)
 app.use("/api/auth", authRoutes); // Authentication (No authentication required)
+app.use("/api/jobs", jobsRoutes); // ✅ Added Jobs Route
 
-// ✅ Application & Resume Routes (If issues occur, remove `authenticate`)
+// ✅ Application & Resume Routes (Ensure auth where needed)
 app.use("/api/applications", authenticate, applicationRoutes);
 app.use("/api/resume-feedback", authenticate, resumeFeedbackRoutes);
 

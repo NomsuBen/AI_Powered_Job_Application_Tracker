@@ -5,20 +5,29 @@ const JobApplicationSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true, // ✅ Ensures applications are linked to a user
     },
-    jobTitle: { type: String, required: true },
-    companyName: { type: String, required: true },
-    jobLocation: { type: String },
+    jobTitle: {
+      type: String,
+      required: [true, "Job title is required"],
+      trim: true,
+    },
+    companyName: {
+      type: String,
+      required: [true, "Company name is required"],
+      trim: true,
+    },
     applicationStatus: {
       type: String,
       enum: ["Applied", "Interview Scheduled", "Offer Received", "Rejected"],
-      required: true,
+      default: "Applied", // ✅ Default status
     },
-    applicationDate: { type: Date, default: Date.now }, // ✅ Default value added
-    notes: { type: String },
+    notes: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true } // ✅ Adds `createdAt` & `updatedAt` automatically
 );
 
 module.exports = mongoose.model("JobApplication", JobApplicationSchema);
