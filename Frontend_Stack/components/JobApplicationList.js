@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function JobApplicationList({ applications, onDelete }) {
   // ✅ Use environment variable for API URL, fallback to Heroku backend URL
@@ -42,7 +43,10 @@ export default function JobApplicationList({ applications, onDelete }) {
                   {app.jobTitle} at {app.companyName}
                 </p>
                 <p>Status: {app.applicationStatus}</p>
-                <p>Notes: {app.notes}</p>
+                <p>Notes: {app.notes || "No additional notes"}</p>
+                <p>
+                  Date Applied: {new Date(app.dateApplied).toLocaleDateString()}
+                </p>
               </div>
               <button
                 onClick={() => handleDelete(app._id)}
