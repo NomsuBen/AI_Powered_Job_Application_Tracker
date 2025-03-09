@@ -11,35 +11,37 @@ export default function JobApplicationForm({ onApplicationAdded }) {
   const [loading, setLoading] = useState(true);
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.REACT_APP_API_URL ||
     "https://ben-job-tracker-ac5542a936fb.herokuapp.com/api";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get(`${API_URL}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setUserId(res.data.user._id);
-        })
-        .catch((err) => {
-          console.error("❌ Failed to fetch user:", err.response?.data || err);
-          alert("Error fetching user data. Please log in again.");
-        })
-        .finally(() => setLoading(false)); // ✅ Ensure loading state updates
-    } else {
+    if (!token) {
+      alert("Unauthorized: Please log in.");
       setLoading(false);
+      return;
     }
-  }, [API_URL]); // ✅ Added `API_URL` dependency to avoid stale values
+
+    axios
+      .get(`${API_URL}/auth/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setUserId(res.data.user?._id); // ✅ Ensure user object exists
+      })
+      .catch((err) => {
+        console.error("❌ Failed to fetch user:", err.response?.data || err);
+        alert("Error fetching user data. Please log in again.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Unauthorized: Please log in again.");
+      alert("Unauthorized: Please log in.");
       return;
     }
 
@@ -49,7 +51,7 @@ export default function JobApplicationForm({ onApplicationAdded }) {
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/applications`,
         {
           jobTitle: jobTitle.trim(),
@@ -63,8 +65,6 @@ export default function JobApplicationForm({ onApplicationAdded }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      console.log("✅ Application Added:", response.data);
 
       // ✅ Reset form fields
       setJobTitle("");
